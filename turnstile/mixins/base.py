@@ -8,6 +8,9 @@ try:
 except ImportError as exc:
     raise ImproperlyConfigured('Turnstile DRF mixin requires Django REST Framework.') from exc
 
+import logging
+
+logger = logging.getLogger(__name__)
 
 class TurnstileValidationMixin:
 
@@ -52,6 +55,7 @@ class TurnstileValidationMixin:
                 request.META.get('REMOTE_ADDR')
             )
         except TurnstileVerificationException as e:
+            logger.error('Turnstile verification failed: %s', str(e))
             raise APIException(_('Validation error.')) from e
 
         if not result.success:
